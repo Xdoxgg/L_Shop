@@ -1,17 +1,18 @@
 
 import express from 'express';
 import userRoutes from './src/routes/userRoutes';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 
 const app = express();
 
-app.use(express.json()); // для парсинга JSON в теле запроса
+app.use(express.json()); 
 
-// Подключаем маршруты
 app.use('/users', userRoutes);
 
 
-const PORT =  3000;
-
+const PORT = process.env.SERVER_PORT || 3000;
+ 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

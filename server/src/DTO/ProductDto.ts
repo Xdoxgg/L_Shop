@@ -7,7 +7,7 @@ type Address= {
 }
 
 export interface ProductDto {
-    id: number | string;
+    id: number;
     title: string;
     price: number;
     isAvailable: boolean;

@@ -1,5 +1,6 @@
 import UserDto from "../DTO/UserDto";
 import {DataRepository} from "../repositories/DataRepository";
+import userRoutes from "../routes/userRoutes";
 
 
 class UserService {
@@ -17,13 +18,16 @@ class UserService {
         return this.instance;
     }
 
-
+    private getUsers(): UserDto[] {
+        return this.dataRepository.readArray('users');
+    }
+    
     private setUsers(data: UserDto[]): void {
         this.dataRepository.writeArray('users', data);
     }
 
     public addUser(data: UserDto): void {
-        let arr = this.dataRepository.readArray('users');
+        let arr =this.getUsers();
         let dataId: number;
         if (arr.length == 0) {
             arr = []
@@ -31,24 +35,20 @@ class UserService {
         } else {
             dataId = arr[arr.length - 1].id + 1;
         }
-
         //TODO: add check constraint on data
         data.id = dataId;
-
         arr.push(data);
         this.setUsers(arr);
     }
 
-    public checkAccount(data: UserDto): boolean {
+    public checkAccount(data: UserDto): boolean { // TODO: add optimisation
         let result = false;
-        const users = this.dataRepository.readArray('users');
+        const users = this.getUsers();
         users.forEach(user => {
             if ((user.name == data.name || user.email == data.email || user.phone == data.phone) && user.password == data.password) {
                 result = true;
             }
         })
-
-
         return result;
     }
 

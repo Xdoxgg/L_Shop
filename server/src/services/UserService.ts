@@ -10,7 +10,7 @@ class UserService {
         this.dataRepository = new DataRepository<UserDto>();
     }
 
-    public static getInstance() {
+    public static getInstance(): UserService {
         if (this.instance == null) {
             this.instance = new UserService();
         }
@@ -25,7 +25,7 @@ class UserService {
     public addUser(data: UserDto): void {
         let arr = this.dataRepository.readArray('users');
         let dataId: number;
-        if (arr.length==0) {
+        if (arr.length == 0) {
             arr = []
             dataId = 1;
         } else {
@@ -34,13 +34,23 @@ class UserService {
 
         //TODO: add check constraint on data
         data.id = dataId;
-        console.log(dataId);
-        // console.log(arr);
 
         arr.push(data);
         this.setUsers(arr);
     }
 
+    public checkAccount(data: UserDto): boolean {
+        let result = false;
+        const users = this.dataRepository.readArray('users');
+        users.forEach(user => {
+            if ((user.name == data.name || user.email == data.email || user.phone == data.phone) && user.password == data.password) {
+                result = true;
+            }
+        })
+
+
+        return result;
+    }
 
 }
 

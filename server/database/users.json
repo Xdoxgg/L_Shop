@@ -33,19 +33,5 @@
     "password": "fp",
     "email": "ne@gmail.com",
     "phone": "+22222222222"
-  },
-  {
-    "id": 6,
-    "name": "fu",
-    "password": "fp",
-    "email": "ne@gmail.com",
-    "phone": "+22222222222"
-  },
-  {
-    "id": 7,
-    "name": "fu",
-    "password": "fp",
-    "email": "ne@gmail.com",
-    "phone": "+22222222222"
   }
 ]

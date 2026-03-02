@@ -6,7 +6,7 @@ type Address= {
     houseNumber?: string;
 }
 
-export interface ProductDto {
+export class ProductDto {
     id: number;
     title: string;
     price: number;

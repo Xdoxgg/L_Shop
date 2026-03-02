@@ -26,7 +26,7 @@ class UserService {
         this.dataRepository.writeArray('users', data);
     }
 
-    public addUser(data: UserDto): void {
+    public addUser(data: UserDto): string {
         let arr =this.getUsers();
         let dataId: number;
         if (arr.length == 0) {
@@ -39,6 +39,7 @@ class UserService {
         data.id = dataId;
         arr.push(data);
         this.setUsers(arr);
+        return 'success'
     }
 
     public checkAccount(data: UserDto): boolean { // TODO: add optimisation

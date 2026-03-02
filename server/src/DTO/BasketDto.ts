@@ -1,11 +1,11 @@
 import {ProductDto} from "./ProductDto";
 
-interface BasketProduct {
+export class BasketProduct {
     count: number;
     products: ProductDto;
 }
 
-export interface BasketDto {
+export class BasketDto {
     id: number | string;
     userId: number | string;
     basket: BasketProduct[];

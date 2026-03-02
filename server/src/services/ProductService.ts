@@ -25,7 +25,7 @@ class ProductService {
         this.dataRepository.writeArray('products', data);
     }
 
-    public addProduct(data: ProductDto): void {
+    public addProduct(data: ProductDto): string {
         let arr =this.getProducts();
         let dataId: number;
         if (arr.length == 0) {
@@ -38,6 +38,7 @@ class ProductService {
         data.id = dataId;
         arr.push(data);
         this.setProducts(arr);
+        return 'success';
     }
 
 

@@ -1,0 +1,95 @@
+/* Registration.css */
+
+.registration-form {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 25px 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.registration-form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 600;
+  color: #222;
+}
+
+.registration-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.registration-form input[type='text'],
+.registration-form input[type='password'],
+.registration-form input[type='tel'],
+.registration-form input[type='email'] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.registration-form input[type='text']:focus,
+.registration-form input[type='password']:focus,
+.registration-form input[type='tel']:focus,
+.registration-form input[type='email']:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+}
+
+.registration-form fieldset {
+  border: none;
+  margin-bottom: 20px;
+  padding: 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.registration-form legend {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.registration-form input[type='radio'] {
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.registration-form label > input[type='radio'] {
+  vertical-align: middle;
+}
+
+.registration-form button[type='submit'] {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #007bff;
+  border: none;
+  border-radius: 7px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.registration-form button[type='submit']:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: #d9534f;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}

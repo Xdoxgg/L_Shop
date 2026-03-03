@@ -3,6 +3,7 @@ import '../App.css'
 import '../styles/header.css'
 import '../styles/main.css'
 import Authorisation from './Authorisation'
+import Registration from './Registration'
 
 type Product = {
   id: number
@@ -143,7 +144,9 @@ const testProducts: Product[] = [
 export default function MainComponent({mainContent, setMainContent}: MainContentProps) {
   switch (mainContent){
     case 'authorisation': return(<Authorisation setMainContent={setMainContent}/>)
+    case 'registration': return(<Registration setMainContent={setMainContent}/>)
   case 'logo':
+    
   case undefined:
   return (
     <main>

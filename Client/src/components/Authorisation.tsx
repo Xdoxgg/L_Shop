@@ -51,11 +51,11 @@ export default function Authorisation({setMainContent}: AutorisationProps){
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        style={{ width: '100%', padding: 8, marginBottom: 16 }}
+        style={{ width: '100%', padding: 8, marginBottom: 10 }}
         placeholder="Введите пароль"
       />
 
-      <fieldset style={{ marginBottom: 16 }}>
+      {/* <fieldset style={{ marginBottom: 16 }}>
         <legend>Контакт для связи</legend>
         <label style={{ marginRight: 12 }}>
           <input
@@ -113,7 +113,14 @@ export default function Authorisation({setMainContent}: AutorisationProps){
             placeholder="example@mail.com"
           />
         </>
-      )}
+      )} */}
+      
+      <p  style={{ marginTop: 20, textAlign: 'center', cursor:'pointer' }}>
+        Нет аккаунта?{' '}
+        <a onClick={()=>setMainContent('registration')} style={{ color: '#007bff', textDecoration: 'none' }}>
+          Зарегистрироваться
+        </a>
+      </p>
 
       <button
         type="submit"
@@ -127,6 +134,7 @@ export default function Authorisation({setMainContent}: AutorisationProps){
           fontSize: '1rem',
         }}
       >
+        
         Войти
       </button>
     </form>

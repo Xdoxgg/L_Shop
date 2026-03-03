@@ -16,7 +16,7 @@ export default function Header({setMainContent}: HeaderProps) {
         />
         <div className="header-right">
           <button className="cart-btn" aria-label="Корзина">🛒</button>
-          <button className="user-btn" aria-label="Кабинет пользователя">👤</button>
+          <button className="user-btn" aria-label="Кабинет пользователя" onClick={()=> setMainContent('authorisation')}>👤</button>
         </div>
       </div>
     </header>

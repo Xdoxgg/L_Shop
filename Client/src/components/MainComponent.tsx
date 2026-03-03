@@ -2,6 +2,7 @@ import React from 'react'
 import '../App.css'
 import '../styles/header.css'
 import '../styles/main.css'
+import Authorisation from './Authorisation'
 
 type Product = {
   id: number
@@ -13,6 +14,7 @@ type Product = {
 
 type MainContentProps = {
   mainContent: string | undefined;
+   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 const testProducts: Product[] = [
@@ -138,7 +140,11 @@ const testProducts: Product[] = [
 ]
 
 
-export default function MainComponent({mainContent}: MainContentProps) {
+export default function MainComponent({mainContent, setMainContent}: MainContentProps) {
+  switch (mainContent){
+    case 'authorisation': return(<Authorisation setMainContent={setMainContent}/>)
+  case 'logo':
+  case undefined:
   return (
     <main>
       <div className="main-wrapper">
@@ -170,4 +176,5 @@ export default function MainComponent({mainContent}: MainContentProps) {
       </div>
     </main>
   )}
+}
 

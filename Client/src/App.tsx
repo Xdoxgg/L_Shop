@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <Header setMainContent={setMainContent}/>
-      <MainComponent mainContent={mainContent}/>
+      <MainComponent setMainContent={setMainContent} mainContent={mainContent}/>
       
     </>
   )

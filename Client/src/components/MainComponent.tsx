@@ -11,6 +11,10 @@ type Product = {
   available: boolean
 }
 
+type MainContentProps = {
+  mainContent: string | undefined;
+}
+
 const testProducts: Product[] = [
   {
     id: 1,
@@ -133,7 +137,8 @@ const testProducts: Product[] = [
   },
 ]
 
-export default function MainComponent() {
+
+export default function MainComponent({mainContent}: MainContentProps) {
   return (
     <main>
       <div className="main-wrapper">
@@ -164,5 +169,5 @@ export default function MainComponent() {
         </aside>
       </div>
     </main>
-  )
-}
+  )}
+

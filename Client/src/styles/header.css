@@ -21,6 +21,18 @@
   font-weight: bold;
   white-space: nowrap;
   margin-left: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  font-size: 2rem; 
+  font-weight: bold;
+  white-space: nowrap;
+  margin-left: 20px;
+  cursor: pointer;
+  transform: scale(1.5);
+  
 }
 
 .search-input {
@@ -61,11 +73,14 @@
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
+    transition: all 0.3s ease;
+
 }
 
 .cart-btn:hover,
 .user-btn:hover {
   color: #ddd;
+    transform: scale(1.5);
 }
 
 @media (max-width: 600px) {

@@ -1,11 +1,13 @@
 import '../App.css'
 import '../styles/header.css'
-
-export default function Header() {
+type HeaderProps = {
+  setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
+};
+export default function Header({setMainContent}: HeaderProps) {
   return (
     <header>
       <div className="header">
-        <div className="logo">B&C</div>
+        <div className="logo" onClick={() => setMainContent('logo')}>B&C</div>
         <input
           type="search"
           className="search-input"

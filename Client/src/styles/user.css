@@ -1,0 +1,305 @@
+
+.user-container {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 30px 30px 40px;
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  position: relative;
+}
+
+.user-container h1 {
+  text-align: center;
+  margin-bottom: 36px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #111;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  padding: 12px 18px;
+  background-color: #f7f9fc;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  font-weight: 500;
+  color: #222;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.edit-btn,
+.logout-btn {
+  margin-top: 20px;
+  padding: 14px 0;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  width: 100%;
+}
+
+.edit-btn {
+  background-color: #007bff;
+}
+
+.edit-btn:hover,
+.edit-btn:focus {
+  background-color: #0056b3;
+  outline: none;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+}
+
+.logout-btn:hover,
+.logout-btn:focus {
+  background-color: #a71d2a;
+  outline: none;
+}
+
+.user-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.user-form input[type='text'],
+.user-form input[type='password'],
+.user-form input[type='email'],
+.user-form input[type='tel'] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1.8px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.user-form input[type='text']:focus,
+.user-form input[type='password']:focus,
+.user-form input[type='email']:focus,
+.user-form input[type='tel']:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex-grow: 1;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  user-select: none;
+  color: #555;
+  padding: 0;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toggle-password:hover {
+  color: #007bff;
+}
+
+.error {
+  display: block;
+  margin-top: -14px;
+  margin-bottom: 14px;
+  color: #d9534f;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.save-btn {
+  flex-grow: 1;
+  padding: 14px 0;
+  background-color: #007bff;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.save-btn:hover,
+.save-btn:focus {
+  background-color: #0056b3;
+  outline: none;
+}
+
+.cancel-btn {
+  flex-grow: 1;
+  padding: 14px 0;
+  background-color: #6c757d;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.cancel-btn:hover,
+.cancel-btn:focus {
+  background-color: #565e64;
+  outline: none;
+}
+
+/* Оверлей и окно подтверждения выхода */
+.logout-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.logout-confirm-box {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 12px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+}
+
+.logout-confirm-box h2 {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.logout-confirm-box p {
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+}
+
+.logout-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-confirm,
+.btn-cancel {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-confirm {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-confirm:hover,
+.btn-confirm:focus {
+  background-color: #a71d2a;
+  outline: none;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #565e64;
+  outline: none;
+}
+
+/* Адаптив */
+@media (max-width: 480px) {
+  .user-container {
+    margin: 20px 15px;
+    padding: 20px 15px 30px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .value {
+    max-width: 100%;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  .logout-buttons {
+    flex-direction: column;
+  }
+
+  .btn-confirm,
+  .btn-cancel {
+    width: 100%;
+  }
+}

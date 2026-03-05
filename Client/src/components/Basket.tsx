@@ -9,8 +9,13 @@ interface CartItem {
   imageUrl: string
 }
 
-export default function Cart() {
-  // Пример начальных товаров в корзине
+
+type BasketProps = {
+  mainContent: string | undefined;
+   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
+
+export default function Basket({mainContent, setMainContent}: BasketProps) {
   const [items, setItems] = useState<CartItem[]>([
     {
       id: '1',

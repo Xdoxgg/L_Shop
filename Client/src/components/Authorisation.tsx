@@ -3,7 +3,11 @@ import '../styles/auth.css'
 type AutorisationProps = {
   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
+
+
 // TODO: бля кораче сделай норм margin в авторизации/регистрации
+
+
 export default function Authorisation({setMainContent}: AutorisationProps){
   // Состояния для полей формы
   const [username, setUsername] = useState('')

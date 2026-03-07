@@ -5,7 +5,7 @@ type AutorisationProps = {
 };
 
 
-// TODO: бля кораче сделай норм margin в авторизации/регистрации
+// TODO: бля кораче сделай норм margin в авторизации/регистрации да и вообще везде
 
 
 export default function Authorisation({setMainContent}: AutorisationProps){

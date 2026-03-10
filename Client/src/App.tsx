@@ -12,7 +12,9 @@ function App() {
   return (
     <>
       <Header setMainContent={setMainContent}/>
+      <main>
       <MainComponent setMainContent={setMainContent} mainContent={mainContent}/>
+      </main>
       {/* <User></User> */}
       {/* <Cart></Cart> */}
     </>

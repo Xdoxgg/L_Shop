@@ -4,6 +4,7 @@ import '../styles/header.css'
 import '../styles/main.css'
 import Authorisation from './Authorisation'
 import Registration from './Registration'
+import Basket from './Basket'
 
 type Product = {
   id: number
@@ -145,11 +146,12 @@ export default function MainComponent({mainContent, setMainContent}: MainContent
   switch (mainContent){
     case 'authorisation': return(<Authorisation setMainContent={setMainContent}/>)
     case 'registration': return(<Registration setMainContent={setMainContent}/>)
+    case 'Basket': return(<Basket setMainContent={setMainContent}/>)
+
   case 'logo':
     
   case undefined:
   return (
-    <main>
       <div className="main-wrapper">
         <section className="products-section">
           {testProducts.map((product) => (
@@ -177,7 +179,6 @@ export default function MainComponent({mainContent, setMainContent}: MainContent
           {/* Здесь позже будут элементы фильтрации и сортировки */}
         </aside>
       </div>
-    </main>
   )}
 }
 

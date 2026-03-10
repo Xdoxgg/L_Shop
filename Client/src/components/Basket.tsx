@@ -11,11 +11,10 @@ interface CartItem {
 
 
 type BasketProps = {
-  mainContent: string | undefined;
    setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-export default function Basket({mainContent, setMainContent}: BasketProps) {
+export default function Basket({setMainContent}: BasketProps) {
   const [items, setItems] = useState<CartItem[]>([
     {
       id: '1',

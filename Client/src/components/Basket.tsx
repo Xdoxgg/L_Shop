@@ -17,19 +17,19 @@ type BasketProps = {
 export default function Basket({setMainContent}: BasketProps) {
   const [items, setItems] = useState<CartItem[]>([
     {
-      id: '1',
-      title: 'Смартфон Xiaomi Redmi Note 12',
-      price: 899.99,
-      quantity: 1,
-      imageUrl: 'https://example.com/images/redmi-note-12.jpg',
-    },
-    {
-      id: '2',
-      title: 'Кофеварка DeLonghi Magnifica',
-      price: 350.0,
-      quantity: 2,
-      imageUrl: 'https://example.com/images/delonghi-magnifica.jpg',
-    },
+    id: 1,
+    image: 'https://via.placeholder.com/150/FFD700/000000?text=🍺',
+    name: 'Пиво Жигулевское',
+    price: 8,
+    available: true
+  },
+  {
+    id: 2,
+    image: 'https://via.placeholder.com/150/FFA500/000000?text=🍺',
+    name: 'Пиво Балтика 7',
+    price: 7,
+    available: true
+  }
   ])
 
   // Увеличить количество товара

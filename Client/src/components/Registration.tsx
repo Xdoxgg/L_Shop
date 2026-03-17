@@ -24,7 +24,6 @@ export default function Registration({setMainContent}: RegistrationProps) {
 
     const contactValue = contactMethod === 'phone' ? phone : email
 
-    // Здесь можно добавить логику регистрации, например, отправку на сервер
     console.log({
       username,
       password,

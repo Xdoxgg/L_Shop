@@ -1,19 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import Header from './components/Header'
 import MainComponent from './components/MainComponent'
-import User from './components/User';
-import ItemCard from './components/Item';
-import Cart from './components/Basket';
+
 function App() {
-  
-    const [mainContent, setMainContent] = React.useState<string | undefined>(undefined);
-  
+  const [mainContent, setMainContent] = useState<string | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string>(''); 
+
   return (
     <>
-      <Header setMainContent={setMainContent}/>
+      <Header 
+        setMainContent={setMainContent} 
+        onSearch={setSearchTerm}
+        searchTerm={searchTerm} 
+      />
       <main>
-      <MainComponent setMainContent={setMainContent} mainContent={mainContent}/>
+        <MainComponent 
+          setMainContent={setMainContent} 
+          mainContent={mainContent}
+          searchTerm={searchTerm} 
+        />
       </main>
       {/* <User></User> */}
       {/* <Cart></Cart> */}

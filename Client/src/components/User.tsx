@@ -66,7 +66,7 @@ export default function User() {
 
   const confirmLogout = () => {
     setShowLogoutConfirm(false)
-    // Здесь добавьте логику выхода, например очистку сессии и редирект
+    
     alert('Вы вышли из аккаунта')
   }
 

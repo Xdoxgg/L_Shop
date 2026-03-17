@@ -1,39 +1,48 @@
 import React, { useState } from 'react'
 import '../styles/basket.css'
 
+// Исправленный интерфейс - id должен быть number, так как в данных используются числа
 interface CartItem {
-  id: string
+  id: number  
   title: string
   price: number
   quantity: number
   imageUrl: string
+  name?: string 
+  image?: string
+  available?: boolean
 }
-
 
 type BasketProps = {
-   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-export default function Basket({setMainContent}: BasketProps) {
+export default function Basket({ setMainContent }: BasketProps) {
   const [items, setItems] = useState<CartItem[]>([
     {
-    id: 1,
-    image: 'https://via.placeholder.com/150/FFD700/000000?text=🍺',
-    name: 'Пиво Жигулевское',
-    price: 8,
-    available: true
-  },
-  {
-    id: 2,
-    image: 'https://via.placeholder.com/150/FFA500/000000?text=🍺',
-    name: 'Пиво Балтика 7',
-    price: 7,
-    available: true
-  }
+      id: 1,  // теперь это number, что соответствует интерфейсу
+      image: 'https://via.placeholder.com/150/FFD700/000000?text=🍺',
+      name: 'Пиво Жигулевское',
+      price: 8,
+      available: true,
+      title: 'Пиво Жигулевское',  // добавляем title для соответствия интерфейсу
+      imageUrl: 'https://via.placeholder.com/150/FFD700/000000?text=🍺',  // добавляем imageUrl
+      quantity: 1  // добавляем quantity
+    },
+    {
+      id: 2,  // теперь это number
+      image: 'https://via.placeholder.com/150/FFA500/000000?text=🍺',
+      name: 'Пиво Балтика 7',
+      price: 7,
+      available: true,
+      title: 'Пиво Балтика 7',  // добавляем title
+      imageUrl: 'https://via.placeholder.com/150/FFA500/000000?text=🍺',  // добавляем imageUrl
+      quantity: 1  // добавляем quantity
+    }
   ])
 
-  // Увеличить количество товара
-  const increment = (id: string) => {
+  // Меняем тип параметра с string на number
+  const increment = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -41,8 +50,8 @@ export default function Basket({setMainContent}: BasketProps) {
     )
   }
 
-  // Уменьшить количество товара (минимум 1)
-  const decrement = (id: string) => {
+  // Меняем тип параметра с string на number
+  const decrement = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id && item.quantity > 1
@@ -52,22 +61,20 @@ export default function Basket({setMainContent}: BasketProps) {
     )
   }
 
-  // Удалить товар из корзины
-  const removeItem = (id: string) => {
+  // Меняем тип параметра с string на number
+  const removeItem = (id: number) => {
     setItems((prev) => prev.filter((item) => item.id !== id))
   }
 
-  // Общая сумма
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   )
 
-  // Обработка оформления заказа (заглушка)
   const handleOrder = (e: React.FormEvent) => {
     e.preventDefault()
     alert(`Спасибо за заказ на сумму ${totalPrice.toFixed(2)} BYN!`)
-    setItems([]) // Очистить корзину после заказа
+    setItems([])
   }
 
   return (
@@ -79,52 +86,58 @@ export default function Basket({setMainContent}: BasketProps) {
       ) : (
         <>
           <ul className="cart-list" aria-label="Список товаров в корзине">
-            {items.map(({ id, title, price, quantity, imageUrl }) => (
-              <li key={id} className="cart-item">
-                <img
-                  src={imageUrl}
-                  alt={title}
-                  className="cart-item__image"
-                  width={80}
-                  height={80}
-                  loading="lazy"
-                />
-                <div className="cart-item__info">
-                  <h2 className="cart-item__title">{title}</h2>
-                  <p className="cart-item__price">
-                    Цена: {price.toLocaleString('ru-RU', { style: 'currency', currency: 'BYN' })}
-                  </p>
-                  <div className="cart-item__quantity">
-                    <button
-                      onClick={() => decrement(id)}
-                      aria-label={`Уменьшить количество товара ${title}`}
-                      disabled={quantity <= 1}
-                      type="button"
-                    >
-                      −
-                    </button>
-                    <span aria-live="polite" aria-atomic="true" className="quantity-value">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => increment(id)}
-                      aria-label={`Увеличить количество товара ${title}`}
-                      type="button"
-                    >
-                      +
-                    </button>
+            {items.map((item) => {
+              // Используем title или name, imageUrl или image
+              const title = item.title || item.name || 'Товар'
+              const imageUrl = item.imageUrl || item.image || ''
+              
+              return (
+                <li key={item.id} className="cart-item">
+                  <img
+                    src={imageUrl}
+                    alt={title}
+                    className="cart-item__image"
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                  />
+                  <div className="cart-item__info">
+                    <h2 className="cart-item__title">{title}</h2>
+                    <p className="cart-item__price">
+                      Цена: {item.price.toLocaleString('ru-RU', { style: 'currency', currency: 'BYN' })}
+                    </p>
+                    <div className="cart-item__quantity">
+                      <button
+                        onClick={() => decrement(item.id)}
+                        aria-label={`Уменьшить количество товара ${title}`}
+                        disabled={item.quantity <= 1}
+                        type="button"
+                      >
+                        −
+                      </button>
+                      <span aria-live="polite" aria-atomic="true" className="quantity-value">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => increment(item.id)}
+                        aria-label={`Увеличить количество товара ${title}`}
+                        type="button"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <button
-                  className="cart-item__remove"
-                  onClick={() => removeItem(id)}
-                  aria-label={`Удалить товар ${title} из корзины`}
-                  type="button"
-                >
-                  ×
-                </button>
-              </li>
-            ))}
+                  <button
+                    className="cart-item__remove"
+                    onClick={() => removeItem(item.id)}
+                    aria-label={`Удалить товар ${title} из корзины`}
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </li>
+              )
+            })}
           </ul>
 
           <form className="cart-summary" onSubmit={handleOrder} aria-label="Форма оформления заказа">

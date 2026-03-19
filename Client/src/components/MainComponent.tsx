@@ -68,56 +68,40 @@ export default function MainComponent({
   // Состояние корзины
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
-  // Загрузка данных из JSON
+  const [user, setUser] = useState<any>(null)
+
   useEffect(() => {
-    // Пробуем разные пути
-    const possiblePaths = [
-      '/server/database/products.json',
-      '/products.json',
-      '../database/products.json',
-      './database/products.json'
-    ]
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+      setIsAuthenticated(true)
+    }
+  }, [setIsAuthenticated])
 
-    const tryLoadFromPath = (pathIndex: number) => {
-      if (pathIndex >= possiblePaths.length) {
-        setError('Не удалось загрузить товары')
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch('http://localhost:3000/products')
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setProducts(data)
+          setError(null)
+        } else {
+          throw new Error('Неверный формат данных: ожидался массив')
+        }
+      } catch (err) {
+        console.error('Ошибка загрузки товаров:', err)
+        setError(err instanceof Error ? err.message : 'Не удалось загрузить товары')
+      } finally {
         setLoading(false)
-        return
       }
-
-      const path = possiblePaths[pathIndex]
-      console.log(`Пробуем загрузить из: ${path}`)
-
-      fetch(path)
-        .then(response => {
-          console.log(`Статус ответа для ${path}:`, response.status)
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(data => {
-          console.log('Загружены товары:', data)
-          if (data && data.products) {
-            setProducts(data.products)
-            setError(null)
-          } else if (Array.isArray(data)) {
-            setProducts(data)
-            setError(null)
-          } else {
-            throw new Error('Неверный формат данных')
-          }
-          setLoading(false)
-        })
-        .catch(error => {
-          console.error(`Ошибка загрузки из ${path}:`, error)
-          // Пробуем следующий путь
-          tryLoadFromPath(pathIndex + 1)
-        })
     }
 
-    // Начинаем с первого пути
-    tryLoadFromPath(0)
+    fetchProducts()
   }, [])
 
   // Функция для определения эмодзи по категории
@@ -176,10 +160,10 @@ export default function MainComponent({
 
   // Рендер разных страниц
   if (mainContent === 'authorisation') {
-    return <Authorisation setMainContent={setMainContent} setIsAuthenticated={setIsAuthenticated} />
+    return <Authorisation setMainContent={setMainContent} setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
   }
   if (mainContent === 'registration') {
-    return <Registration setMainContent={setMainContent} setIsAuthenticated={setIsAuthenticated} />
+    return <Registration setMainContent={setMainContent} setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
   }
   if (mainContent === 'Basket') {
     return (
@@ -194,7 +178,7 @@ export default function MainComponent({
     )
   }
   if (mainContent === 'user') {
-    return <User />
+    return <User user={user} setUser={setUser} setIsAuthenticated={setIsAuthenticated} setMainContent={setMainContent} />
   }
 
   if (loading) {
@@ -458,7 +442,7 @@ export default function MainComponent({
   )
 }
 
-// СТИЛИ
+// СТИЛИ (твои оригинальные, без изменений)
 const styles: StylesType = {
   container: {
     minHeight: '100vh',

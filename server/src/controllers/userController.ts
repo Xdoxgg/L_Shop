@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import UserService from "../services/UserService";
-import UserDto from "../DTO/UserDto";
 
 class UserController {
     private static instance: UserController;
@@ -9,29 +8,44 @@ class UserController {
         if (!UserController.instance) {
             UserController.instance = new UserController();
         }
-        return this.instance;
+        return UserController.instance;
     }
 
-    registrationUser(req: Request, res: Response): void {
-        let user = new UserDto();
-        user.name = req.query.name as string;
-        user.password = req.query.password as string;
-        user.email = req.query.email as string;
-        user.phone = req.query.phone as string;
-        console.log(user);
-        console.log(req.query.name);
-        res.json({'result' : UserService.getInstance().addUser(user)})
+    public async register(req: Request, res: Response): Promise<void> {
+        const { name, password, email, phone } = req.body;
+
+        if (!name || !password) {
+            res.status(400).json({ error: 'Имя и пароль обязательны' });
+            return;
+        }
+
+        const result = await UserService.getInstance().register({ name, password, email, phone });
+        if (result.success) {
+            res.status(201).json(result.user);
+        } else {
+            res.status(400).json({ error: result.message });
+        }
     }
-    
-    authoriseUser(req: Request, res: Response): void {
-        let user = new UserDto();
-        user.name = req.query.name as string;
-        user.password = req.query.password as string;
-        user.email = req.query.email as string;
-        user.phone = req.query.phone as string;
-        console.log(user);
-        console.log(req.query.name);
-        res.json({'result' : UserService.getInstance().checkAccount(user)})
+
+    public async login(req: Request, res: Response): Promise<void> {
+        const { name, password } = req.body;
+
+        if (!name || !password) {
+            res.status(400).json({ error: 'Имя и пароль обязательны' });
+            return;
+        }
+
+        const result = await UserService.getInstance().login(name, password);
+        if (result.success) {
+            res.json(result.user);
+        } else {
+            res.status(401).json({ error: result.message });
+        }
+    }
+
+    public getAllUsers(req: Request, res: Response): void {
+        const users = UserService.getInstance().getAllUsers();
+        res.json(users);
     }
 }
 

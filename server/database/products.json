@@ -1,0 +1,170 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Пиво Жигулевское Бочковое",
+      "price": 8,
+      "isAvailable": true,
+      "description": "Классическое светлое пиво с насыщенным вкусом и ароматом хмеля. Традиционный сорт, который любят многие поколения.",
+      "categories": ["Пиво", "Светлое"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/FFD700/000000?text=🍺",
+        "gallery": [
+          "https://via.placeholder.com/600/FFD700/000000?text=Пиво+1",
+          "https://via.placeholder.com/600/FFD700/000000?text=Пиво+2",
+          "https://via.placeholder.com/600/FFD700/000000?text=Пиво+3"
+        ]
+      },
+      "delivery": {
+        "startTown": {
+          "country": "Беларусь",
+          "town": "Минск",
+          "street": "ул. Пивоваров",
+          "houseNumber": "15"
+        },
+        "earlyDate": "2024-03-20T10:00:00.000Z",
+        "price": 5
+      },
+      "discount": 10
+    },
+    {
+      "id": 2,
+      "title": "Пиво Балтика №7",
+      "price": 7,
+      "isAvailable": true,
+      "description": "Мягкое пиво с золотистым цветом и легким хмелевым ароматом. Отличный выбор для дружеской встречи.",
+      "categories": ["Пиво", "Светлое"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/FFA500/000000?text=🍺",
+        "gallery": [
+          "https://via.placeholder.com/600/FFA500/000000?text=Балтика+1",
+          "https://via.placeholder.com/600/FFA500/000000?text=Балтика+2"
+        ]
+      },
+      "delivery": {
+        "startTown": {
+          "country": "Беларусь",
+          "town": "Минск",
+          "street": "ул. Пивоваров",
+          "houseNumber": "15"
+        },
+        "earlyDate": "2024-03-20T10:00:00.000Z",
+        "price": 5
+      }
+    },
+    {
+      "id": 3,
+      "title": "Пиво Хайнекен Премиум",
+      "price": 12,
+      "isAvailable": true,
+      "description": "Премиальное пиво с освежающим вкусом и характерной горчинкой. Международный бренд высшего качества.",
+      "categories": ["Пиво", "Премиум", "Светлое"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/FF4500/000000?text=🍺",
+        "gallery": [
+          "https://via.placeholder.com/600/FF4500/000000?text=Хайнекен+1",
+          "https://via.placeholder.com/600/FF4500/000000?text=Хайнекен+2",
+          "https://via.placeholder.com/600/FF4500/000000?text=Хайнекен+3"
+        ]
+      },
+      "delivery": {
+        "startTown": {
+          "country": "Беларусь",
+          "town": "Минск",
+          "street": "ул. Пивоваров",
+          "houseNumber": "15"
+        },
+        "earlyDate": "2024-03-20T10:00:00.000Z",
+        "price": 5
+      },
+      "discount": 15
+    },
+    {
+      "id": 4,
+      "title": "Сухарики Кириешки с беконом",
+      "price": 4,
+      "isAvailable": true,
+      "description": "Хрустящие сухарики с ароматом бекона. Идеальная закуска к пиву.",
+      "categories": ["Закуски", "Сухарики"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/D2691E/FFFFFF?text=🥨"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Сухарики Воронцовские с сыром",
+      "price": 5,
+      "isAvailable": false,
+      "description": "Сырные сухарики с насыщенным вкусом. Отличная закуска для пивной вечеринки.",
+      "categories": ["Закуски", "Сухарики"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/8B4513/FFFFFF?text=🥨"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Вяленая рыбка к пиву",
+      "price": 9,
+      "isAvailable": true,
+      "description": "Традиционная закуска к пиву. Вяленая рыбка - классика жанра.",
+      "categories": ["Закуски", "Рыбные"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/4169E1/FFFFFF?text=🐟"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Креветки пивные с чесноком",
+      "price": 15,
+      "isAvailable": true,
+      "description": "Нежные креветки в чесночном соусе. Премиальная закуска к пиву.",
+      "categories": ["Закуски", "Морепродукты", "Премиум"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/FF69B4/000000?text=🦐"
+      }
+    },
+    {
+      "id": 8,
+      "title": "Сырные палочки с кунжутом",
+      "price": 8,
+      "isAvailable": true,
+      "description": "Хрустящие сырные палочки, посыпанные кунжутом. Отличная закуска к пиву.",
+      "categories": ["Закуски", "Сырные"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/FFD700/000000?text=🧀"
+      }
+    },
+    {
+      "id": 9,
+      "title": "Пиво Темное Балтика №4",
+      "price": 8,
+      "isAvailable": true,
+      "description": "Темное пиво с карамельным вкусом и шоколадными нотками.",
+      "categories": ["Пиво", "Темное"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/654321/FFFFFF?text=🍺"
+      },
+      "delivery": {
+        "startTown": {
+          "country": "Беларусь",
+          "town": "Минск",
+          "street": "ул. Пивоваров",
+          "houseNumber": "15"
+        },
+        "earlyDate": "2024-03-20T10:00:00.000Z",
+        "price": 5
+      }
+    },
+    {
+      "id": 10,
+      "title": "Пиво Безалкогольное Балтика 0",
+      "price": 6,
+      "isAvailable": true,
+      "description": "Безалкогольное пиво с насыщенным вкусом. Для тех, кто за рулем.",
+      "categories": ["Пиво", "Безалкогольное"],
+      "images": {
+        "preview": "https://via.placeholder.com/300/87CEEB/000000?text=🍺"
+      }
+    }
+  ]
+}

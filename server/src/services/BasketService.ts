@@ -1,65 +1,107 @@
-import {ProductDto} from "../DTO/ProductDto";
-import UserDto from "../DTO/UserDto";
-import {DataRepository} from "../repositories/DataRepository";
-import {BasketDto, BasketProduct} from "../DTO/BasketDto";
-import ProductService from "./ProductService";
-
+import { DataRepository } from '../repositories/DataRepository';
+import { BasketDto, BasketProduct } from '../DTO/BasketDto';
+import ProductService from './ProductService';
 
 class BasketService {
     private static instance: BasketService;
-    private dataRepository = new DataRepository<BasketDto>();
+    private dataRepository: DataRepository<BasketDto>;
 
     private constructor() {
-
+        this.dataRepository = new DataRepository<BasketDto>();
     }
 
-    public static getInstance() {
-        if (!this.instance) {
-            this.instance = new BasketService();
+    public static getInstance(): BasketService {
+        if (!BasketService.instance) {
+            BasketService.instance = new BasketService();
         }
-        return this.instance;
+        return BasketService.instance;
     }
 
-    private getBaskets(): BasketDto[] {
-        return this.dataRepository.readArray('basket');
-    }
-    
-    private setBaskets(data: BasketDto[]) {
-        this.dataRepository.writeArray('basket', data);
-    }
-    
-    public getUserBasket(userId: number) {
-        return this.getBaskets().filter(el => el.userId === userId)[0];
+    private readBaskets(): BasketDto[] {
+        return this.dataRepository.readArray('baskets');
     }
 
-    public addItemToBasket(userId: number, itemId: number, count: number) {
-        const item = ProductService.getInstance().getProducts().filter(el => el.id === itemId)[0];
-        let baskets = this.getBaskets();
-        let userBasket = baskets.find(basket => basket.userId === userId);
+    private writeBaskets(data: BasketDto[]): void {
+        this.dataRepository.writeArray('baskets', data);
+    }
 
-        if (!userBasket) {
-            userBasket = new BasketDto();
-            userBasket.id = userId;
-            baskets.push(userBasket);
+    private getUserBasketOrCreate(userId: number): BasketDto {
+        const baskets = this.readBaskets();
+        let basket = baskets.find(b => b.userId === userId);
+        if (!basket) {
+            basket = {
+                id: baskets.length + 1,
+                userId,
+                basket: []
+            };
+            baskets.push(basket);
+            this.writeBaskets(baskets);
+        }
+        return basket;
+    }
+
+    public getUserBasket(userId: number): BasketDto {
+        return this.getUserBasketOrCreate(userId);
+    }
+
+    public addItemToBasket(userId: number, productId: number, count: number): string {
+        const baskets = this.readBaskets();
+        let basket = baskets.find(b => b.userId === userId);
+        if (!basket) {
+            basket = { id: baskets.length + 1, userId, basket: [] };
+            baskets.push(basket);
         }
 
-        const existingItemIndex = userBasket.basket.findIndex(i => i.products.id === itemId);
+        const product = ProductService.getInstance().getProductById(productId);
+        if (!product) return 'Товар не найден';
 
-        if (existingItemIndex !== -1) {
-            userBasket.basket[existingItemIndex].count += count;
+        const existing = basket.basket.find(item => item.products.id === productId);
+        if (existing) {
+            existing.count += count;
         } else {
-            let productBasket = new BasketProduct();
-            productBasket.count = count;
-            productBasket.products = item;
-            userBasket.basket.push(productBasket);
+            basket.basket.push({ count, products: product });
         }
-        
-        this.setBaskets(baskets );
 
-
-
+        this.writeBaskets(baskets);
+        return 'success';
     }
 
+    public removeItemFromBasket(userId: number, productId: number): string {
+        const baskets = this.readBaskets();
+        const basket = baskets.find(b => b.userId === userId);
+        if (!basket) return 'Корзина не найдена';
+
+        basket.basket = basket.basket.filter(item => item.products.id !== productId);
+        this.writeBaskets(baskets);
+        return 'success';
+    }
+
+    public updateItemCount(userId: number, productId: number, count: number): string {
+        const baskets = this.readBaskets();
+        const basket = baskets.find(b => b.userId === userId);
+        if (!basket) return 'Корзина не найдена';
+
+        const item = basket.basket.find(i => i.products.id === productId);
+        if (!item) return 'Товар не в корзине';
+
+        if (count <= 0) {
+            basket.basket = basket.basket.filter(i => i.products.id !== productId);
+        } else {
+            item.count = count;
+        }
+
+        this.writeBaskets(baskets);
+        return 'success';
+    }
+
+    public clearBasket(userId: number): string {
+        const baskets = this.readBaskets();
+        const basket = baskets.find(b => b.userId === userId);
+        if (!basket) return 'Корзина не найдена';
+        basket.basket = [];
+        this.writeBaskets(baskets);
+        return 'success';
+    }
 }
 
 export default BasketService;

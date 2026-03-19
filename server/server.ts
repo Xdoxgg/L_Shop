@@ -3,6 +3,8 @@ import express from 'express';
 import userRoutes from './src/routes/userRoutes';
 import * as dotenv from 'dotenv';
 import productRoutes from "./src/routes/productRoutes";
+import deliveryRoutes from './src/routes/deliveryRoutes';
+
 dotenv.config({ path: '.env' });
 
 const app = express();

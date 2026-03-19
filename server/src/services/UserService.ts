@@ -1,7 +1,6 @@
 import UserDto from "../DTO/UserDto";
-import {DataRepository} from "../repositories/DataRepository";
-import userRoutes from "../routes/userRoutes";
-
+import { DataRepository } from "../repositories/DataRepository";
+import bcrypt from 'bcrypt';
 
 class UserService {
     private static instance: UserService;
@@ -12,47 +11,64 @@ class UserService {
     }
 
     public static getInstance(): UserService {
-        if (this.instance == null) {
-            this.instance = new UserService();
+        if (!UserService.instance) {
+            UserService.instance = new UserService();
         }
-        return this.instance;
+        return UserService.instance;
     }
 
     private getUsers(): UserDto[] {
         return this.dataRepository.readArray('users');
     }
-    
+
     private setUsers(data: UserDto[]): void {
         this.dataRepository.writeArray('users', data);
     }
 
-    public addUser(data: UserDto): string {
-        let arr =this.getUsers();
-        let dataId: number;
-        if (arr.length == 0) {
-            arr = []
-            dataId = 1;
-        } else {
-            dataId = arr[arr.length - 1].id + 1;
-        }
-        //TODO: add check constraint on data
-        data.id = dataId;
-        arr.push(data);
-        this.setUsers(arr);
-        return 'success'
-    }
-
-    public checkAccount(data: UserDto): boolean { // TODO: add optimisation
-        let result = false;
+    public async register(userData: { name: string; password: string; email?: string; phone?: string }): Promise<{ success: boolean; message: string; user?: Omit<UserDto, 'password'> }> {
         const users = this.getUsers();
-        users.forEach(user => {
-            if ((user.name == data.name || user.email == data.email || user.phone == data.phone) && user.password == data.password) {
-                result = true;
-            }
-        })
-        return result;
+
+        if (users.some(u => u.name === userData.name)) {
+            return { success: false, message: 'Пользователь с таким именем уже существует' };
+        }
+
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+        const newUser: UserDto = {
+            id: users.length > 0 ? users[users.length - 1].id + 1 : 1,
+            name: userData.name,
+            password: hashedPassword,
+            email: userData.email,
+            phone: userData.phone
+        };
+
+        users.push(newUser);
+        this.setUsers(users);
+
+        const { password, ...safeUser } = newUser;
+        return { success: true, message: 'Регистрация успешна', user: safeUser };
     }
 
+    public async login(name: string, password: string): Promise<{ success: boolean; message: string; user?: Omit<UserDto, 'password'> }> {
+        const users = this.getUsers();
+        const user = users.find(u => u.name === name);
+
+        if (!user) {
+            return { success: false, message: 'Пользователь не найден' };
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return { success: false, message: 'Неверный пароль' };
+        }
+
+        const { password: _, ...safeUser } = user;
+        return { success: true, message: 'Вход выполнен успешен', user: safeUser };
+    }
+
+    public getAllUsers(): Omit<UserDto, 'password'>[] {
+        return this.getUsers().map(({ password, ...rest }) => rest);
+    }
 }
 
 export default UserService;

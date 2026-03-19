@@ -1,107 +1,79 @@
-import { DataRepository } from '../repositories/DataRepository';
-import { BasketDto, BasketProduct } from '../DTO/BasketDto';
-import ProductService from "../services/ProductService";
+import { Request, Response } from 'express';
+import BasketService from '../services/BasketService';
 
-class BasketService {
-    private static instance: BasketService;
-    private dataRepository: DataRepository<BasketDto>;
+class BasketController {
+    private static instance: BasketController;
 
-    private constructor() {
-        this.dataRepository = new DataRepository<BasketDto>();
-    }
+    private constructor() {}
 
-    public static getInstance(): BasketService {
-        if (!BasketService.instance) {
-            BasketService.instance = new BasketService();
+    public static getInstance(): BasketController {
+        if (!BasketController.instance) {
+            BasketController.instance = new BasketController();
         }
-        return BasketService.instance;
+        return BasketController.instance;
     }
 
-    private readBaskets(): BasketDto[] {
-        return this.dataRepository.readArray('baskets');
-    }
-
-    private writeBaskets(data: BasketDto[]): void {
-        this.dataRepository.writeArray('baskets', data);
-    }
-
-    private getUserBasketOrCreate(userId: number): BasketDto {
-        const baskets = this.readBaskets();
-        let basket = baskets.find(b => b.userId === userId);
-        if (!basket) {
-            basket = {
-                id: baskets.length + 1,
-                userId,
-                basket: []
-            };
-            baskets.push(basket);
-            this.writeBaskets(baskets);
+    public getUserBasket(req: Request, res: Response): void {
+        const userId = Number(req.query.userId);
+        if (isNaN(userId)) {
+            res.status(400).json({ error: 'Некорректный userId' });
+            return;
         }
-        return basket;
+        const basket = BasketService.getInstance().getUserBasket(userId);
+        res.json(basket);
     }
 
-    public getUserBasket(userId: number): BasketDto {
-        return this.getUserBasketOrCreate(userId);
-    }
+    public addItemToBasket(req: Request, res: Response): void {
+        const userId = Number(req.body.userId);
+        const itemId = Number(req.body.itemId);
+        const count = Number(req.body.count);
 
-    public addItemToBasket(userId: number, productId: number, count: number): string {
-        const baskets = this.readBaskets();
-        let basket = baskets.find(b => b.userId === userId);
-        if (!basket) {
-            basket = { id: baskets.length + 1, userId, basket: [] };
-            baskets.push(basket);
+        if (isNaN(userId) || isNaN(itemId) || isNaN(count) || count <= 0) {
+            res.status(400).json({ error: 'Некорректные данные' });
+            return;
         }
 
-        const product = ProductService.getInstance().getProductById(productId);
-        if (!product) return 'Товар не найден';
+        const result = BasketService.getInstance().addItemToBasket(userId, itemId, count);
+        res.json({ result });
+    }
 
-        const existing = basket.basket.find(item => item.products.id === productId);
-        if (existing) {
-            existing.count += count;
-        } else {
-            basket.basket.push({ count, products: product });
+    public removeItemFromBasket(req: Request, res: Response): void {
+        const userId = Number(req.body.userId);
+        const itemId = Number(req.body.itemId);
+
+        if (isNaN(userId) || isNaN(itemId)) {
+            res.status(400).json({ error: 'Некорректные userId или itemId' });
+            return;
         }
 
-        this.writeBaskets(baskets);
-        return 'success';
+        const result = BasketService.getInstance().removeItemFromBasket(userId, itemId);
+        res.json({ result });
     }
 
-    public removeItemFromBasket(userId: number, productId: number): string {
-        const baskets = this.readBaskets();
-        const basket = baskets.find(b => b.userId === userId);
-        if (!basket) return 'Корзина не найдена';
+    public updateItemCount(req: Request, res: Response): void {
+        const userId = Number(req.body.userId);
+        const itemId = Number(req.body.itemId);
+        const count = Number(req.body.count);
 
-        basket.basket = basket.basket.filter(item => item.products.id !== productId);
-        this.writeBaskets(baskets);
-        return 'success';
-    }
-
-    public updateItemCount(userId: number, productId: number, count: number): string {
-        const baskets = this.readBaskets();
-        const basket = baskets.find(b => b.userId === userId);
-        if (!basket) return 'Корзина не найдена';
-
-        const item = basket.basket.find(i => i.products.id === productId);
-        if (!item) return 'Товар не в корзине';
-
-        if (count <= 0) {
-            basket.basket = basket.basket.filter(i => i.products.id !== productId);
-        } else {
-            item.count = count;
+        if (isNaN(userId) || isNaN(itemId) || isNaN(count) || count < 0) {
+            res.status(400).json({ error: 'Некорректные данные' });
+            return;
         }
 
-        this.writeBaskets(baskets);
-        return 'success';
+        const result = BasketService.getInstance().updateItemCount(userId, itemId, count);
+        res.json({ result });
     }
 
-    public clearBasket(userId: number): string {
-        const baskets = this.readBaskets();
-        const basket = baskets.find(b => b.userId === userId);
-        if (!basket) return 'Корзина не найдена';
-        basket.basket = [];
-        this.writeBaskets(baskets);
-        return 'success';
+    public clearBasket(req: Request, res: Response): void {
+        const userId = Number(req.body.userId);
+        if (isNaN(userId)) {
+            res.status(400).json({ error: 'Некорректный userId' });
+            return;
+        }
+
+        const result = BasketService.getInstance().clearBasket(userId);
+        res.json({ result });
     }
 }
 
-export default BasketService;
+export default BasketController;

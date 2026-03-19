@@ -33,5 +33,17 @@
     "password": "fp",
     "email": "ne@gmail.com",
     "phone": "+22222222222"
+  },
+  {
+    "id": 6,
+    "name": "qwerty123",
+    "password": "$2b$10$xI4li161W/vV5Lcu08uEeePQJEn1vuZGWrk2z8/gLQyhANFkbB/hK",
+    "email": "qwerty@12.3"
+  },
+  {
+    "id": 7,
+    "name": "qwerty",
+    "password": "$2b$10$K9UUOn2yEjfS6C.xA2t6fOUfvKeT42zYAdTOnktb1w1ucumjd.wAy",
+    "email": "qwerty@12.3"
   }
 ]

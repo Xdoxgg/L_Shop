@@ -1,12 +1,12 @@
-import {Router} from 'express';
-import UserController from "../controllers/userController";
+import { Router } from 'express';
+import UserController from '../controllers/userController';
 
 const router = Router();
-const userController = UserController.getInstance();
+const controller = UserController.getInstance();
 
+router.post('/register', controller.register.bind(controller));
+router.post('/login', controller.login.bind(controller));
 
-router.get('/authoriseUser', userController.authoriseUser);
-router.get('/registrationUser', userController.registrationUser);
-
+router.get('/', controller.getAllUsers.bind(controller));
 
 export default router;

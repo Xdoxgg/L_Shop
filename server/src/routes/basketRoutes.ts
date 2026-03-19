@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import BasketController from '../controllers/BasketController';
+import BasketController from '../controllers/basketController';
 
 const router = Router();
 const controller = BasketController.getInstance();

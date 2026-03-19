@@ -1,45 +1,54 @@
 import React, { useState } from 'react'
 
-type AutorisationProps = {
+type AuthorisationProps = {
   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>; // Добавляем пропс для авторизации
-};
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
+}
 
-export default function Authorisation({ setMainContent, setIsAuthenticated }: AutorisationProps) {
+export default function Authorisation({ setMainContent, setIsAuthenticated, setUser }: AuthorisationProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setLoading(true)
 
-    // Простая проверка (в реальном проекте здесь будет запрос к API)
-    if (username && password) {
-      if (password.length < 3) {
-        setError('🍺 Пароль слишком короткий!')
-        return
+    try {
+      const response = await fetch('http://localhost:3000/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: username, password })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsAuthenticated(true)
+        setUser(data)
+        localStorage.setItem('user', JSON.stringify(data))
+        alert(`🍻 С возвращением, ${username}!`)
+        setMainContent('main')
+      } else {
+        setError(data.error || 'Неверное имя или пароль')
       }
-      
-      // Успешная авторизация
-      setIsAuthenticated(true) // Устанавливаем флаг авторизации
-      alert(`🍻 С возвращением, ${username}! Заждались уже!`)
-      setMainContent('logo') // Перенаправляем на главную
-    } else {
-      setError('🍺 Заполните все поля!')
+    } catch (err) {
+      setError('Не удалось подключиться к серверу')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div style={styles.container}>
-      {/* ДЕКОРАТИВНАЯ ЛЕНТА СВЕРХУ */}
       <div style={styles.tapeTop}>
         <span style={styles.tapeText}>🍻 Добро пожаловать в Таверну! 🍻</span>
       </div>
 
-      {/* ОСНОВНОЙ КОНТЕНТ */}
       <div style={styles.mainContent}>
-        {/* ЛЕВАЯ ДЕКОРАТИВНАЯ ЧАСТЬ */}
         <div style={styles.leftDecoration}>
           <div style={styles.beerMugs}>
             <span style={styles.mugIcon}>🍺</span>
@@ -50,24 +59,19 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
             <p style={styles.woodPhrase}>Пиво пенится,</p>
             <p style={styles.woodPhrase}>друзья ценятся!</p>
           </div>
-         
         </div>
 
-        {/* ФОРМА АВТОРИЗАЦИИ */}
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* ЗАГОЛОВОК С ДЕКОРОМ */}
           <div style={styles.header}>
             <span style={styles.headerIcon}>🍺</span>
             <h2 style={styles.title}>Вход в таверну</h2>
             <span style={styles.headerIcon}>🍺</span>
           </div>
 
-          {/* ПОДЗАГОЛОВОК */}
           <p style={styles.subtitle}>
             Для постоянных посетителей
           </p>
 
-          {/* ПОЛЕ ИМЕНИ */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
               <span style={styles.labelIcon}>👤</span>
@@ -83,7 +87,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
             />
           </div>
 
-          {/* ПОЛЕ ПАРОЛЯ */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
               <span style={styles.labelIcon}>🔒</span>
@@ -99,7 +102,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
             />
           </div>
 
-          {/* ОШИБКА */}
           {error && (
             <div style={styles.errorContainer}>
               <span style={styles.errorIcon}>⚠️</span>
@@ -107,14 +109,12 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
             </div>
           )}
 
-          {/* КНОПКА ВХОДА */}
-          <button type="submit" style={styles.submitButton}>
+          <button type="submit" style={styles.submitButton} disabled={loading}>
             <span style={styles.buttonIcon}>🍻</span>
-            Войти в таверну
+            {loading ? 'Вход...' : 'Войти в таверну'}
             <span style={styles.buttonIcon}>🍺</span>
           </button>
 
-          {/* ССЫЛКА НА РЕГИСТРАЦИЮ */}
           <div style={styles.registerLink}>
             <span style={styles.linkText}>Новичок?</span>
             <a 
@@ -125,7 +125,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
             </a>
           </div>
 
-          {/* ДЕКОРАТИВНЫЙ НИЗ ФОРМЫ */}
           <div style={styles.formFooter}>
             <span style={styles.footerEmoji}>🍺</span>
             <span style={styles.footerEmoji}>🥨</span>
@@ -133,7 +132,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
           </div>
         </form>
 
-        {/* ПРАВАЯ ДЕКОРАТИВНАЯ ЧАСТЬ */}
         <div style={styles.rightDecoration}>
           <div style={styles.hops}>
             <span style={styles.hopsIcon}>🌾</span>
@@ -147,7 +145,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
         </div>
       </div>
 
-      {/* ДЕКОРАТИВНАЯ ЛЕНТА СНИЗУ */}
       <div style={styles.tapeBottom}>
         <span style={styles.tapeText}>🍻 Заходи, гостем будешь! 🍻</span>
       </div>
@@ -155,7 +152,6 @@ export default function Authorisation({ setMainContent, setIsAuthenticated }: Au
   )
 }
 
-// СТИЛИ (те же, что и раньше)
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     minHeight: '100vh',
@@ -369,7 +365,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '15px',
     transition: 'all 0.3s',
     boxShadow: '0 8px 20px rgba(218,165,32,0.3)',
-    marginTop: '20px'
+    marginTop: '20px',
+    opacity: 1,
   },
   buttonIcon: {
     fontSize: '24px',
@@ -411,33 +408,34 @@ const styles: { [key: string]: React.CSSProperties } = {
   }
 }
 
-// Добавляем анимации
-const style = document.createElement('style')
-style.textContent = `
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-  }
-  
-  @keyframes shake {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(5deg); }
-    75% { transform: rotate(-5deg); }
-  }
-  
-  input:focus {
-    border-color: #DAA520 !important;
-    box-shadow: 0 0 15px rgba(218,165,32,0.3) !important;
-  }
-  
-  button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(218,165,32,0.4) !important;
-  }
-  
-  a:hover {
-    color: #FFD700 !important;
-    border-bottom: 2px solid #FFD700 !important;
-  }
-`
-document.head.appendChild(style)
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+    }
+    
+    input:focus {
+      border-color: #DAA520 !important;
+      box-shadow: 0 0 15px rgba(218,165,32,0.3) !important;
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 25px rgba(218,165,32,0.4) !important;
+    }
+    
+    a:hover {
+      color: #FFD700 !important;
+      border-bottom: 2px solid #FFD700 !important;
+    }
+  `
+  document.head.appendChild(style)
+}

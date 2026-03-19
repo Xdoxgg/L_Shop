@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 
 type RegistrationProps = {
   setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>; // Добавляем пропс
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export default function Registration({ setMainContent, setIsAuthenticated }: RegistrationProps) {
+export default function Registration({ setMainContent, setIsAuthenticated, setUser }: RegistrationProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -13,52 +14,72 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
     if (password !== confirmPassword) {
-      setError('🍺 Пароли не совпадают! Кружка мимо прошла!')
+      setError('🍺 Пароли не совпадают!')
       return
     }
-
     if (password.length < 6) {
       setError('🍺 Пароль должен быть не короче 6 символов!')
       return
     }
-
     if (!username) {
       setError('🍺 Введите имя!')
       return
     }
-
     if (contactMethod === 'phone' && !phone) {
       setError('🍺 Введите номер телефона!')
       return
     }
-
     if (contactMethod === 'email' && !email) {
       setError('🍺 Введите email!')
       return
     }
 
-    // Успешная регистрация
-    setIsAuthenticated(true) // Автоматически авторизуем после регистрации
-    alert(`🍻 Добро пожаловать в таверну, ${username}!`)
-    setMainContent('logo') // Перенаправляем на главную
+    setLoading(true)
+
+    try {
+      const response = await fetch('http://localhost:3000/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: username,
+          password,
+          email: contactMethod === 'email' ? email : undefined,
+          phone: contactMethod === 'phone' ? phone : undefined
+        })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsAuthenticated(true)
+        setUser(data)
+        localStorage.setItem('user', JSON.stringify(data))
+        alert(`🍻 Добро пожаловать в таверну, ${username}!`)
+        setMainContent('main')
+      } else {
+        setError(data.error || 'Ошибка регистрации')
+      }
+    } catch (err) {
+      setError('Не удалось подключиться к серверу')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div style={styles.container}>
-      {/* ДЕКОРАТИВНАЯ ЛЕНТА СВЕРХУ */}
       <div style={styles.tapeTop}>
         <span style={styles.tapeText}>🍻 Запись в гильдию пивоваров! 🍻</span>
       </div>
 
-      {/* ОСНОВНОЙ КОНТЕНТ */}
       <div style={styles.mainContent}>
-        {/* ЛЕВАЯ ДЕКОРАТИВНАЯ ЧАСТЬ */}
         <div style={styles.leftDecoration}>
           <div style={styles.woodSign}>
             <p style={styles.signText}>Правила</p>
@@ -84,25 +105,18 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
           </div>
         </div>
 
-        {/* ФОРМА РЕГИСТРАЦИИ */}
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* ЗАГОЛОВОК */}
           <div style={styles.header}>
             <span style={styles.headerIcon}>📜</span>
             <h2 style={styles.title}>Запись в постоянные</h2>
             <span style={styles.headerIcon}>📜</span>
           </div>
 
-          {/* ПОДЗАГОЛОВОК */}
-          <p style={styles.subtitle}>
-            Заполните свиток данными
-          </p>
+          <p style={styles.subtitle}>Заполните свиток данными</p>
 
-          {/* ИМЯ ПОЛЬЗОВАТЕЛЯ */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
-              <span style={styles.labelIcon}>👤</span>
-              Ваше имя (позывной)
+              <span style={styles.labelIcon}>👤</span> Ваше имя (позывной)
             </label>
             <input
               type="text"
@@ -114,11 +128,9 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             />
           </div>
 
-          {/* ПАРОЛЬ */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
-              <span style={styles.labelIcon}>🔒</span>
-              Придумайте ключ
+              <span style={styles.labelIcon}>🔒</span> Придумайте ключ
             </label>
             <input
               type="password"
@@ -130,11 +142,9 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             />
           </div>
 
-          {/* ПОДТВЕРЖДЕНИЕ ПАРОЛЯ */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
-              <span style={styles.labelIcon}>🔐</span>
-              Повторите ключ
+              <span style={styles.labelIcon}>🔐</span> Повторите ключ
             </label>
             <input
               type="password"
@@ -146,13 +156,12 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             />
           </div>
 
-          {/* ВЫБОР КОНТАКТА */}
           <div style={styles.contactSection}>
             <div style={styles.contactHeader}>
               <span style={styles.contactIcon}>📞</span>
               <span style={styles.contactTitle}>Как с Вами связаться?</span>
             </div>
-            
+
             <div style={styles.radioGroup}>
               <label style={styles.radioLabel}>
                 <input
@@ -165,7 +174,6 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
                 />
                 <span style={styles.radioText}>📱 Позвонить</span>
               </label>
-              
               <label style={styles.radioLabel}>
                 <input
                   type="radio"
@@ -179,12 +187,10 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
               </label>
             </div>
 
-            {/* ПОЛЕ ДЛЯ ТЕЛЕФОНА ИЛИ EMAIL */}
             {contactMethod === 'phone' ? (
               <div style={styles.inputGroup}>
                 <label style={styles.label}>
-                  <span style={styles.labelIcon}>📞</span>
-                  Номер телефона
+                  <span style={styles.labelIcon}>📞</span> Номер телефона
                 </label>
                 <input
                   type="tel"
@@ -198,8 +204,7 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             ) : (
               <div style={styles.inputGroup}>
                 <label style={styles.label}>
-                  <span style={styles.labelIcon}>✉️</span>
-                  Электронная почта
+                  <span style={styles.labelIcon}>✉️</span> Электронная почта
                 </label>
                 <input
                   type="email"
@@ -213,7 +218,6 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             )}
           </div>
 
-          {/* ОШИБКА */}
           {error && (
             <div style={styles.errorContainer}>
               <span style={styles.errorIcon}>⚠️</span>
@@ -221,25 +225,19 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
             </div>
           )}
 
-          {/* КНОПКА РЕГИСТРАЦИИ */}
-          <button type="submit" style={styles.submitButton}>
+          <button type="submit" style={styles.submitButton} disabled={loading}>
             <span style={styles.buttonIcon}>📜</span>
-            Вступить в гильдию
+            {loading ? 'Загрузка...' : 'Вступить в гильдию'}
             <span style={styles.buttonIcon}>🍺</span>
           </button>
 
-          {/* ССЫЛКА НА АВТОРИЗАЦИЮ */}
           <div style={styles.loginLink}>
             <span style={styles.linkText}>Уже свой?</span>
-            <a 
-              onClick={() => setMainContent('authorisation')} 
-              style={styles.link}
-            >
+            <a onClick={() => setMainContent('authorisation')} style={styles.link}>
               Заходи в таверну 🍻
             </a>
           </div>
 
-          {/* ДЕКОРАТИВНЫЙ НИЗ */}
           <div style={styles.formFooter}>
             <span style={styles.footerEmoji}>🍺</span>
             <span style={styles.footerEmoji}>🥨</span>
@@ -248,7 +246,6 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
           </div>
         </form>
 
-        {/* ПРАВАЯ ДЕКОРАТИВНАЯ ЧАСТЬ */}
         <div style={styles.rightDecoration}>
           <div style={styles.benefits}>
             <h3 style={styles.benefitsTitle}>Что даёт запись?</h3>
@@ -277,7 +274,6 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
         </div>
       </div>
 
-      {/* ДЕКОРАТИВНАЯ ЛЕНТА СНИЗУ */}
       <div style={styles.tapeBottom}>
         <span style={styles.tapeText}>🍻 Становись постоянным гостем! 🍻</span>
       </div>
@@ -285,7 +281,6 @@ export default function Registration({ setMainContent, setIsAuthenticated }: Reg
   )
 }
 
-// СТИЛИ (те же, что и раньше)
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     minHeight: '100vh',
@@ -382,14 +377,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#DEB887',
     fontSize: '16px',
     fontWeight: '500'
-  },
-  barrelSmall: {
-    width: '120px',
-    height: '160px',
-    background: 'linear-gradient(135deg, #8B4513, #654321)',
-    borderRadius: '50% 50% 30% 30%',
-    border: '4px solid #DAA520',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
   },
   form: {
     background: 'rgba(44, 26, 12, 0.95)',
@@ -531,7 +518,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '15px',
     transition: 'all 0.3s',
     boxShadow: '0 8px 20px rgba(218,165,32,0.3)',
-    marginTop: '10px'
+    marginTop: '10px',
+    opacity: 1
   },
   buttonIcon: {
     fontSize: '24px'
@@ -616,31 +604,28 @@ const styles: { [key: string]: React.CSSProperties } = {
   }
 }
 
-// Добавляем анимации
-const style = document.createElement('style')
-style.textContent = `
-  @keyframes stack {
-    0%, 100% { transform: rotate(5deg) translateY(0); }
-    50% { transform: rotate(8deg) translateY(-5px); }
-  }
-  
-  input:focus {
-    border-color: #DAA520 !important;
-    box-shadow: 0 0 20px rgba(218,165,32,0.3) !important;
-  }
-  
-  button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(218,165,32,0.4) !important;
-  }
-  
-  a:hover {
-    color: #FFD700 !important;
-    border-bottom: 2px solid #FFD700 !important;
-  }
-  
-  .radioLabel:hover {
-    transform: scale(1.05);
-  }
-`
-document.head.appendChild(style)
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes stack {
+      0%, 100% { transform: rotate(5deg) translateY(0); }
+      50% { transform: rotate(8deg) translateY(-5px); }
+    }
+    input:focus {
+      border-color: #DAA520 !important;
+      box-shadow: 0 0 20px rgba(218,165,32,0.3) !important;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(218,165,32,0.4) !important;
+    }
+    a:hover {
+      color: #FFD700 !important;
+      border-bottom: 2px solid #FFD700 !important;
+    }
+    .radioLabel:hover {
+      transform: scale(1.05);
+    }
+  `
+  document.head.appendChild(style)
+}

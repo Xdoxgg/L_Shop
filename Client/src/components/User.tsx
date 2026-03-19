@@ -2,76 +2,88 @@ import React, { useState } from 'react'
 import '../styles/user.css'
 
 interface UserData {
-  username: string
-  email: string
-  phone: string
-  password: string
+  id: number
+  name: string
+  email?: string
+  phone?: string
 }
 
-export default function User() {
-  const [userData, setUserData] = useState<UserData>({
-    username: 'ivan_ivanov',
-    email: 'ivan@example.com',
-    phone: '+375 (29) 123-45-67',
-    password: '',
-  })
+interface UserProps {
+  user: UserData | null
+  setUser: React.Dispatch<React.SetStateAction<any>>
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
+  setMainContent: React.Dispatch<React.SetStateAction<string | undefined>>
+}
 
-  const [showPassword, setShowPassword] = useState(false)
+export default function User({ user, setUser, setIsAuthenticated, setMainContent }: UserProps) {
   const [editMode, setEditMode] = useState(false)
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    password: ''
+  })
+  const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleChange = (field: keyof UserData, value: string) => {
-    setUserData((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => ({ ...prev, [field]: '' }))
+  if (!user) {
+    return <div style={{ color: '#FFD700', padding: '20px' }}>Загрузка...</div>
+  }
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setErrors(prev => ({ ...prev, [field]: '' }))
   }
 
   const validate = (): boolean => {
     const newErrors: { [key: string]: string } = {}
-
-    if (!userData.username.trim()) newErrors.username = 'Имя пользователя обязательно'
-    if (userData.password && userData.password.length < 6)
+    if (!formData.name.trim()) newErrors.name = 'Имя обязательно'
+    if (formData.password && formData.password.length < 6)
       newErrors.password = 'Пароль должен быть не менее 6 символов'
-    if (!userData.email.trim()) newErrors.email = 'Электронная почта обязательна'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email))
+    if (!formData.email?.trim()) newErrors.email = 'Электронная почта обязательна'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = 'Введите корректный email'
-    if (!userData.phone.trim()) newErrors.phone = 'Номер телефона обязателен'
-    else if (
-      !/^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/.test(userData.phone.trim())
-    )
-      newErrors.phone = 'Введите корректный белорусский номер телефона'
-
+    if (!formData.phone?.trim()) newErrors.phone = 'Номер телефона обязателен'
+    else if (!/^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/.test(formData.phone.trim()))
+      newErrors.phone = 'Введите корректный белорусский номер'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
-    alert('Данные успешно сохранены!')
-    setEditMode(false)
-    setUserData((prev) => ({ ...prev, password: '' }))
+    setLoading(true)
+
+    setTimeout(() => {
+      alert('Данные успешно сохранены! (функция обновления ещё в разработке)')
+      setEditMode(false)
+      setFormData(prev => ({ ...prev, password: '' }))
+      setLoading(false)
+    }, 500)
   }
 
   const handleCancel = () => {
     setEditMode(false)
     setErrors({})
-    setUserData((prev) => ({ ...prev, password: '' }))
-  }
-
-  const handleLogoutClick = () => {
-    setShowLogoutConfirm(true)
+    setFormData({
+      name: user.name,
+      email: user.email || '',
+      phone: user.phone || '',
+      password: ''
+    })
   }
 
   const confirmLogout = () => {
     setShowLogoutConfirm(false)
-    
-    alert('Вы вышли из аккаунта')
-  }
-
-  const cancelLogout = () => {
-    setShowLogoutConfirm(false)
+    setIsAuthenticated(false)
+    setUser(null)
+    localStorage.removeItem('user')
+    alert('Вы вышли из аккаунта. Заходите ещё! 🍻')
+    setMainContent('main')
   }
 
   return (
@@ -83,15 +95,15 @@ export default function User() {
           <div className="user-info">
             <div className="info-row">
               <span className="label">Имя пользователя:</span>
-              <span className="value">{userData.username}</span>
+              <span className="value">{user.name}</span>
             </div>
             <div className="info-row">
               <span className="label">Электронная почта:</span>
-              <span className="value">{userData.email}</span>
+              <span className="value">{user.email || 'не указана'}</span>
             </div>
             <div className="info-row">
               <span className="label">Номер телефона:</span>
-              <span className="value">{userData.phone}</span>
+              <span className="value">{user.phone || 'не указан'}</span>
             </div>
             <div className="info-row">
               <span className="label">Пароль:</span>
@@ -101,23 +113,19 @@ export default function User() {
             <button className="edit-btn" onClick={() => setEditMode(true)}>
               Редактировать профиль
             </button>
-            <button className="logout-btn" onClick={handleLogoutClick}>
+            <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>
               Выйти
             </button>
           </div>
 
           {showLogoutConfirm && (
-            <div className="logout-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+            <div className="logout-confirm-overlay">
               <div className="logout-confirm-box">
-                <h2 id="logout-title">Подтверждение выхода</h2>
-                <p>Вы уверены, что хотите выйти из аккаунта?</p>
+                <h2>Подтверждение выхода</h2>
+                <p>Вы уверены, что хотите выйти?</p>
                 <div className="logout-buttons">
-                  <button className="btn-confirm" onClick={confirmLogout}>
-                    Да
-                  </button>
-                  <button className="btn-cancel" onClick={cancelLogout}>
-                    Нет
-                  </button>
+                  <button className="btn-confirm" onClick={confirmLogout}>Да</button>
+                  <button className="btn-cancel" onClick={() => setShowLogoutConfirm(false)}>Нет</button>
                 </div>
               </div>
             </div>
@@ -125,85 +133,58 @@ export default function User() {
         </>
       ) : (
         <form className="user-form" onSubmit={handleSave} noValidate>
-          <label htmlFor="username">Имя пользователя</label>
+          <label>Имя пользователя</label>
           <input
-            id="username"
             type="text"
-            value={userData.username}
-            onChange={(e) => handleChange('username', e.target.value)}
-            placeholder="Введите имя пользователя"
-            aria-invalid={!!errors.username}
-            aria-describedby="username-error"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            placeholder="Введите имя"
+            className={errors.name ? 'error' : ''}
           />
-          {errors.username && (
-            <span className="error" id="username-error">
-              {errors.username}
-            </span>
-          )}
+          {errors.name && <span className="error-text">{errors.name}</span>}
 
-          <label htmlFor="email">Электронная почта</label>
+          <label>Электронная почта</label>
           <input
-            id="email"
             type="email"
-            value={userData.email}
+            value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="example@mail.com"
-            aria-invalid={!!errors.email}
-            aria-describedby="email-error"
+            className={errors.email ? 'error' : ''}
           />
-          {errors.email && (
-            <span className="error" id="email-error">
-              {errors.email}
-            </span>
-          )}
+          {errors.email && <span className="error-text">{errors.email}</span>}
 
-          <label htmlFor="phone">Номер телефона</label>
+          <label>Номер телефона</label>
           <input
-            id="phone"
             type="tel"
-            value={userData.phone}
+            value={formData.phone}
             onChange={(e) => handleChange('phone', e.target.value)}
             placeholder="+375 (29) 123-45-67"
-            pattern="\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}"
-            aria-invalid={!!errors.phone}
-            aria-describedby="phone-error"
+            className={errors.phone ? 'error' : ''}
           />
-          {errors.phone && (
-            <span className="error" id="phone-error">
-              {errors.phone}
-            </span>
-          )}
+          {errors.phone && <span className="error-text">{errors.phone}</span>}
 
-          <label htmlFor="password">Новый пароль</label>
+          <label>Новый пароль</label>
           <div className="password-wrapper">
             <input
-              id="password"
               type={showPassword ? 'text' : 'password'}
-              value={userData.password}
+              value={formData.password}
               onChange={(e) => handleChange('password', e.target.value)}
-              placeholder="Введите новый пароль"
-              aria-invalid={!!errors.password}
-              aria-describedby="password-error"
-              autoComplete="new-password"
+              placeholder="Оставьте пустым, если не хотите менять"
+              className={errors.password ? 'error' : ''}
             />
             <button
               type="button"
               className="toggle-password"
-              onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+              onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
           </div>
-          {errors.password && (
-            <span className="error" id="password-error">
-              {errors.password}
-            </span>
-          )}
+          {errors.password && <span className="error-text">{errors.password}</span>}
 
           <div className="form-buttons">
-            <button type="submit" className="save-btn">
-              Сохранить
+            <button type="submit" className="save-btn" disabled={loading}>
+              {loading ? 'Сохранение...' : 'Сохранить'}
             </button>
             <button type="button" className="cancel-btn" onClick={handleCancel}>
               Отмена

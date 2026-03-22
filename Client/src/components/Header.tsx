@@ -16,7 +16,24 @@ export default function Header({
   searchTerm  // ДОБАВЛЯЕМ
 }: HeaderProps) {
   
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Очищаем корзину на сервере
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      const user = JSON.parse(storedUser)
+      try {
+        await fetch('http://localhost:3000/basket/clear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id })
+        })
+      } catch (err) {
+        console.error('Ошибка очистки корзины:', err)
+      }
+    }
+    
+    localStorage.removeItem('user')
+    localStorage.removeItem('cartItems')
     setIsAuthenticated(false)
     setMainContent('logo')
     alert('🍻 До новых встреч! Заходи еще!')

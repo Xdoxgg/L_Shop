@@ -68,6 +68,43 @@ export default function MainComponent({
   // Состояние корзины
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
+  // Загрузка корзины с сервера при наличии пользователя
+  useEffect(() => {
+    const loadBasket = async () => {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        const user = JSON.parse(storedUser)
+        try {
+          const response = await fetch(`http://localhost:3000/basket?userId=${user.id}`)
+          if (response.ok) {
+            const basketData = await response.json()
+            if (basketData.basket && Array.isArray(basketData.basket)) {
+              const items = basketData.basket.map((item: any) => ({
+                id: item.products.id,
+                title: item.products.title,
+                price: item.products.price,
+                quantity: item.count,
+                emoji: getEmojiForCategory(item.products.categories?.[0] || ''),
+                category: item.products.categories?.[0],
+                description: item.products.description
+              }))
+              setCartItems(items)
+              localStorage.setItem('cartItems', JSON.stringify(items))
+            }
+          }
+        } catch (err) {
+          console.error('Ошибка загрузки корзины:', err)
+        }
+      }
+    }
+    loadBasket()
+  }, [])
+
+  // Сохраняем корзину в localStorage при изменении
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems))
+  }, [cartItems])
+
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
@@ -116,7 +153,31 @@ export default function MainComponent({
   }
 
   // Добавление в корзину
-  const addToCart = (product: Product) => {
+  const addToCart = async (product: Product) => {
+    const storedUser = localStorage.getItem('user')
+    if (!storedUser) {
+      alert('Для добавления товара в корзину необходимо войти в аккаунт или зарегистрироваться!')
+      setMainContent('authorisation')
+      return
+    }
+    
+    const user = JSON.parse(storedUser)
+    // Отправляем на сервер
+    try {
+      await fetch('http://localhost:3000/basket/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          itemId: product.id,
+          count: 1
+        })
+      })
+    } catch (err) {
+      console.error('Ошибка добавления в корзину:', err)
+    }
+    
+    // Обновляем локальное состояние
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id)
       if (existing) {
@@ -170,10 +231,56 @@ export default function MainComponent({
       <Basket 
         setMainContent={setMainContent}
         items={cartItems}
-        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item.id !== id))}
-        onUpdateQuantity={(id, quantity) => setCartItems(prev => 
-          prev.map(item => item.id === id ? { ...item, quantity } : item)
-        )}
+        onRemoveItem={async (id) => {
+          const storedUser = localStorage.getItem('user')
+          if (storedUser) {
+            const user = JSON.parse(storedUser)
+            try {
+              await fetch('http://localhost:3000/basket/remove', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, itemId: id })
+              })
+            } catch (err) {
+              console.error('Ошибка удаления из корзины:', err)
+            }
+          }
+          setCartItems(prev => prev.filter(item => item.id !== id))
+        }}
+        onUpdateQuantity={async (id, quantity) => {
+          const storedUser = localStorage.getItem('user')
+          if (storedUser) {
+            const user = JSON.parse(storedUser)
+            try {
+              await fetch('http://localhost:3000/basket/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, itemId: id, count: quantity })
+              })
+            } catch (err) {
+              console.error('Ошибка обновления корзины:', err)
+            }
+          }
+          setCartItems(prev => 
+            prev.map(item => item.id === id ? { ...item, quantity } : item)
+          )
+        }}
+        onClearBasket={async () => {
+          const storedUser = localStorage.getItem('user')
+          if (storedUser) {
+            const user = JSON.parse(storedUser)
+            try {
+              await fetch('http://localhost:3000/basket/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id })
+              })
+            } catch (err) {
+              console.error('Ошибка очистки корзины:', err)
+            }
+          }
+          setCartItems([])
+        }}
       />
     )
   }

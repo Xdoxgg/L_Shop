@@ -20,25 +20,72 @@ export default function Registration({ setMainContent, setIsAuthenticated, setUs
     e.preventDefault()
     setError(null)
 
+    // Валидация имени пользователя
+    if (!username.trim()) {
+      setError('🍺 Введите имя пользователя!')
+      return
+    }
+    if (username.trim().length < 3) {
+      setError('🍺 Имя пользователя должно содержать минимум 3 символа!')
+      return
+    }
+    if (username.trim().length > 20) {
+      setError('🍺 Имя пользователя не должно превышать 20 символов!')
+      return
+    }
+    if (!/^[a-zA-Zа-яА-ЯёЁ0-9_-]+$/.test(username.trim())) {
+      setError('🍺 Имя может содержать только буквы, цифры, дефис и подчёркивание!')
+      return
+    }
+
+    // Валидация пароля
+    if (!password) {
+      setError('🍺 Введите пароль!')
+      return
+    }
+    if (password.length < 6) {
+      setError('🍺 Пароль должен содержать минимум 6 символов!')
+      return
+    }
+    if (password.length > 50) {
+      setError('🍺 Пароль не должен превышать 50 символов!')
+      return
+    }
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      setError('🍺 Пароль должен содержать буквы и цифры!')
+      return
+    }
+
+    // Проверка совпадения паролей
     if (password !== confirmPassword) {
       setError('🍺 Пароли не совпадают!')
       return
     }
-    if (password.length < 6) {
-      setError('🍺 Пароль должен быть не короче 6 символов!')
-      return
+
+    // Валидация контактных данных
+    if (contactMethod === 'phone') {
+      if (!phone.trim()) {
+        setError('🍺 Введите номер телефона!')
+        return
+      }
+      // Упрощённая проверка белорусского/российского номера
+      const phoneRegex = /^\+?[0-9\s\-()]{10,20}$/
+      if (!phoneRegex.test(phone.trim())) {
+        setError('🍺 Введите корректный номер телефона (10-20 цифр)!')
+        return
+      }
     }
-    if (!username) {
-      setError('🍺 Введите имя!')
-      return
-    }
-    if (contactMethod === 'phone' && !phone) {
-      setError('🍺 Введите номер телефона!')
-      return
-    }
-    if (contactMethod === 'email' && !email) {
-      setError('🍺 Введите email!')
-      return
+    if (contactMethod === 'email') {
+      if (!email.trim()) {
+        setError('🍺 Введите адрес электронной почты!')
+        return
+      }
+      // Проверка формата email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email.trim())) {
+        setError('🍺 Введите корректный адрес электронной почты!')
+        return
+      }
     }
 
     setLoading(true)

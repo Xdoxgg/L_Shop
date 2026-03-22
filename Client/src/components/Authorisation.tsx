@@ -15,6 +15,27 @@ export default function Authorisation({ setMainContent, setIsAuthenticated, setU
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+
+    // Валидация имени пользователя
+    if (!username.trim()) {
+      setError('🍺 Введите имя пользователя!')
+      return
+    }
+    if (username.trim().length < 3) {
+      setError('🍺 Имя пользователя должно содержать минимум 3 символа!')
+      return
+    }
+
+    // Валидация пароля
+    if (!password) {
+      setError('🍺 Введите пароль!')
+      return
+    }
+    if (password.length < 6) {
+      setError('🍺 Пароль должен содержать минимум 6 символов!')
+      return
+    }
+
     setLoading(true)
 
     try {

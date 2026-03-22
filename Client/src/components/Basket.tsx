@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface CartItem {
   id: number  
@@ -17,18 +17,25 @@ type BasketProps = {
   onAddItem?: (item: CartItem) => void
   onRemoveItem?: (id: number) => void
   onUpdateQuantity?: (id: number, quantity: number) => void
+  onClearBasket?: () => void
 }
 
 export default function Basket({ 
   setMainContent, 
   items: externalItems, 
   onRemoveItem: externalRemoveItem,
-  onUpdateQuantity: externalUpdateQuantity
+  onUpdateQuantity: externalUpdateQuantity,
+  onClearBasket: externalClearBasket
 }: BasketProps) {
   // Если передан externalItems - используем его, иначе пустой массив
   const [items, setItems] = useState<CartItem[]>(externalItems || [])
 
   // Синхронизация с внешними items
+  useEffect(() => {
+    if (externalItems) {
+      setItems(externalItems)
+    }
+  }, [externalItems])
   
   // Функции для работы с корзиной
   const increment = (id: number) => {
@@ -81,15 +88,18 @@ export default function Basket({
     0
   )
 
-  const handleOrder = (e: React.FormEvent) => {
+  const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert(`🍻 Заказ оформлен! Спасибо за покупку на сумму ${totalPrice.toFixed(2)} BYN!`)
-    if (externalRemoveItem) {
-      // Очищаем корзину через внешнюю функцию
-      items.forEach(item => externalRemoveItem(item.id))
+    
+    // Очищаем корзину на сервере и локально
+    if (externalClearBasket) {
+      await externalClearBasket()
     } else {
       setItems([])
     }
+    
+    alert(`🍻 Заказ оформлен! Спасибо за покупку!`)
+    setMainContent('logo')
   }
 
   const continueShopping = () => {

@@ -58,12 +58,34 @@ export default function User({ user, setUser, setIsAuthenticated, setMainContent
 
     setLoading(true)
 
-    setTimeout(() => {
-      alert('Данные успешно сохранены! (функция обновления ещё в разработке)')
-      setEditMode(false)
-      setFormData(prev => ({ ...prev, password: '' }))
+    try {
+      const response = await fetch(`http://localhost:3000/users/${user?.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        })
+      })
+
+      if (response.ok) {
+        const updatedUser = await response.json()
+        setUser(updatedUser)
+        alert('Данные успешно сохранены!')
+        setEditMode(false)
+        setFormData(prev => ({ ...prev, password: '' }))
+      } else {
+        const error = await response.json()
+        alert('Ошибка: ' + (error.error || 'Не удалось сохранить'))
+      }
+    } catch (error) {
+      alert('Ошибка соединения с сервером')
+    } finally {
       setLoading(false)
-    }, 500)
+    }
   }
 
   const handleCancel = () => {
@@ -77,11 +99,27 @@ export default function User({ user, setUser, setIsAuthenticated, setMainContent
     })
   }
 
-  const confirmLogout = () => {
+  const confirmLogout = async () => {
+    // Очищаем корзину на сервере перед выходом
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      const user = JSON.parse(storedUser)
+      try {
+        await fetch('http://localhost:3000/basket/clear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id })
+        })
+      } catch (err) {
+        console.error('Ошибка очистки корзины:', err)
+      }
+    }
+    
     setShowLogoutConfirm(false)
     setIsAuthenticated(false)
     setUser(null)
     localStorage.removeItem('user')
+    localStorage.removeItem('cartItems')
     alert('Вы вышли из аккаунта. Заходите ещё! 🍻')
     setMainContent('main')
   }
